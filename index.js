@@ -37,6 +37,16 @@ async function environmentSetup() {
 		.setAccountId(newAccountId)
 		.execute(client);
 	console.log("The new account balance is: " + accountBalance.hbars.toTinybars() + " tinybar .");
+
+	//send some hbar, since we are transferring from the client to new account there is no need of signing the transactio
+	const sendHbar = await new TransferTransaction()
+		.addHbarTransfer(accountId, Hbar.fromTinybars(-1000))
+		.addHbarTransfer(newAccountId, Hbar.fromTinybars(1000))
+		.execute(client);
+	
+	//verify the transaction reached concensus
+	const transactionReceipt = await sendHbar.getReceipt(client);
+	console.log("The transfer transaction from my account to the new account is: " + transactionReceipt.status.toString());
 }
 
 environmentSetup();
